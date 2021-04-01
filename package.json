@@ -1,0 +1,19 @@
+{
+  "name": "isokio.com",
+  "version": "1.0.0",
+  "description": "Personal Web Utilitiex",
+  "main": "index.js",
+  "author": "Nathan A Sculli, Sr <nathan@vegasbuckeye.com>",
+  "license": "AGPL-3.0-or-later",
+  "private": false,
+  "scripts": {
+    "dev": "parcel index.html",
+    "elm:install": "elm install"
+  },
+  "devDependencies": {
+    "@parcel/transformer-elm": "2.0.0-beta.2",
+    "elm": "^0.19.1-5",
+    "normalize.css": "^8.0.1",
+    "parcel": "^2.0.0-beta.2"
+  }
+}
