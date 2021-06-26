@@ -29,8 +29,8 @@ type alias NavLink =
 
 navLinks : List NavLink
 navLinks =
-  [ { location = "#", display = "Home" }
-  , { location = "#", display = "Font Explorer" }
+  [ { location = "/", display = "Home" }
+  , { location = "/font-explorer", display = "Font Explorer" }
   ]
 
 

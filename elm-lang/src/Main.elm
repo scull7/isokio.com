@@ -55,7 +55,10 @@ type Page
 
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg )
 init flags url key =
-  ( Model key Home, Cmd.none )
+  let
+      page = route url
+  in
+  ( Model key page, Cmd.none )
 
 
 -- UPDATE
@@ -64,12 +67,27 @@ init flags url key =
 type Msg
   = LinkClicked Browser.UrlRequest
   | UrlChanged Url.Url
+  | FontMsg Font.Msg
+
+
+route : Url.Url -> Page
+route url =
+  case Routing.route url of
+    Routing.Home ->
+      Home
+
+    Routing.NotFound ->
+      NotFound
+
+    Routing.FontExplorer ->
+      FontExplorer Font.init
+
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  case msg of
-    LinkClicked urlRequest ->
+  case ( msg, model.page ) of
+    ( LinkClicked urlRequest, _ ) ->
       case urlRequest of
         Browser.Internal url ->
           ( model, Nav.pushUrl model.key (Url.toString url) )
@@ -77,8 +95,22 @@ update msg model =
         Browser.External href ->
           ( model, Nav.load href )
 
-    UrlChanged url ->
+    ( UrlChanged url, _ ) ->
+      ( { model | page = route url }, Cmd.none )
+
+    ( FontMsg subMsg, FontExplorer subModel ) ->
+      Font.update subMsg subModel |> updateWith FontExplorer FontMsg model
+
+    (_, _ ) ->
+      -- Disregard messages that arrived for the wrong page.
       ( model, Cmd.none )
+
+
+updateWith : (a -> Page) -> (b -> Msg) -> Model -> (a, Cmd b) -> ( Model, Cmd Msg )
+updateWith toPage toMsg model (subModel, subCmd) =
+  ( { model | page = toPage subModel }
+  , Cmd.map toMsg subCmd
+  )
 
 
 
@@ -98,6 +130,7 @@ view model =
   { title = "ISOKIO"
   , body =
       [ viewHeader model
+      , viewPage model
       ]
   }
 
@@ -117,6 +150,19 @@ viewBrand =
       [ text "ISOKIO.com"
       ]
     ]
+
+
+viewPage : Model -> Html Msg
+viewPage model =
+  case model.page of
+    Home ->
+      div [] [ text "Welcome Home" ]
+
+    NotFound ->
+      div [] [ text "This is not the page you are looking for" ]
+
+    FontExplorer m ->
+      Font.view FontMsg m
 
 
 {-| A non-breaking space. elm-html doesn't support escape sequences

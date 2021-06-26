@@ -1,6 +1,7 @@
 module Routing exposing (..)
 
-import Url.Parser exposing (Parser, map, oneOf, s, top)
+import Url
+import Url.Parser exposing (Parser, parse, map, oneOf, s, top)
 
 
 -- MODEL
@@ -18,3 +19,8 @@ routeParser =
     [ map Home top
     , map FontExplorer (s "font-explorer")
     ]
+
+
+route : Url.Url -> Route
+route url =
+  Maybe.withDefault NotFound (parse routeParser url)
